@@ -1,73 +1,98 @@
-// C program  to check the balanced parenthesis.
-#include <stdio.h>
-#include <stdlib.h>
+/*  C Program To Check for Balanced Parentheses using Stack*/
 
-#define MAX 100
 
-struct stack {
-  char stck[MAX];
-  int top;
-}s;
+#include<stdio.h>
+#include<string.h>
+#include<stdlib.h>
 
-void push(char item) {
-  if (s.top == (MAX - 1))
-    printf("Stack is Full\n");
+#define MAX 30
+int top=-1;
+int stack[MAX];
 
-  else {
-    s.top = s.top + 1;
-    s.stck[s.top] = item;
-  }
+void push(char);
+char pop();
+int match(char a,char b);
+int check(char []);
+
+int main()
+{
+        char exp[MAX];
+        int valid;
+        printf("Enter an algebraic expression : ");
+        gets(exp);
+        valid=check(exp);
+        if(valid==1)
+                printf("Valid expression\n");
+        else
+                printf("Invalid expression\n");
+
+                return 0;
+
 }
-
-void pop() {
-  if (s.top == -1)
-    printf("Stack is Empty\n");
-
-  else
-    s.top = s.top - 1;
-}
-
-int checkPair(char val1,char val2){
-    return (( val1=='(' && val2==')' )||( val1=='[' && val2==']' )||( val1=='{' && val2=='}' ));
-}
-
-int checkBalanced(char expr[], int len){
-      
-    for (int i = 0; i < len; i++)  
-    { 
-        if (expr[i] == '(' || expr[i] == '[' || expr[i] == '{')  
-        {  
-          push(expr[i]); 
-        } 
+int check(char exp[] )
+{
+        int i;
+        char temp;
+        for(i=0;i<strlen(exp);i++)
+        {
+                if(exp[i]=='(' || exp[i]=='{' || exp[i]=='[')
+                        push(exp[i]);
+                if(exp[i]==')' || exp[i]=='}' || exp[i]==']')
+                        if(top==-1)    /*stack empty*/
+                        {
+                                printf("Right parentheses are more than left parentheses\n");
+                                return 0;
+                        }
+                        else
+                        {
+                                temp=pop();
+                                if(!match(temp, exp[i]))
+                                {
+                                        printf("Mismatched parentheses are : ");
+                                        printf("%c and %c\n",temp,exp[i]);
+                                        return 0;
+                                }
+                        }
+        }
+        if(top==-1) /*stack empty*/
+        {
+                printf("Balanced Parentheses\n");
+                return 1;
+        }
         else
         {
-            // exp = {{}}}
-            // if you look closely above {{}} will be matched with pair, Thus, stack "Empty"
-            //but an extra closing parenthesis like '}' will never be matched
-            //so there is no point looking forward
-        if (s.top == -1) 
-            return 0;
-        else if(checkPair(s.stck[s.top],expr[i]))
-        {
-            pop();
-            continue;
+                printf("Left parentheses more than right parentheses\n");
+                return 0;
         }
-        // will only come here if stack is not empty
-        // pair wasn't found and it's some closing parenthesis
-        //Example : {{}}(]
+}/*End of main()*/
+int match(char a,char b)
+{
+        if(a=='[' && b==']')
+                return 1;
+        if(a=='{' && b=='}')
+                return 1;
+        if(a=='(' && b==')')
+                return 1;
         return 0;
+}/*End of match()*/
+
+void push(char item)
+{
+        if(top==(MAX-1))
+        {
+                printf("Stack Overflow\n");
+                return;
         }
-    }    
-    return 1; 
-}
-int main() {
-  char exp[MAX] = "({})[]{}";
-  int i = 0;
-  s.top = -1;
+        top=top+1;
+        stack[top]=item;
+}/*End of push()*/
 
-  int len = strlen(exp);
-  checkBalanced(exp, len)?printf("Balanced"): printf("Not Balanced"); 
-
-  return 0;
-}
-
+char pop()
+{
+        if(top==-1)
+        {
+                printf("Stack Underflow\n");
+                exit(1);
+        }
+        return(stack[top--]);
+}/*End of pop()*/
